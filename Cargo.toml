@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/sumeeth05/boltweb"
 homepage = "https://github.com/sumeeth05/boltweb"
 readme = "README.md"
-keywords = ["bolt-web", "bolt", "http", "web", "tokio", "hyper", "server"]
+keywords = ["bolt-web", "bolt", "http", "web", "server"]
 categories = ["web", "framework"]
 
 [dependencies]
