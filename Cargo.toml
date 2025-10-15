@@ -1,0 +1,27 @@
+[package]
+name = "bolt-web"
+version = "0.1.0"
+edition = "2024"
+authors = ["sumeeth sumeethveeramallu2001@gmail.com"]
+description = "⚡ A high-performance, minimalist web framework for Rust, inspired by Express.js and Gin."
+license = "MIT"
+repository = "https://github.com/sumeeth05/boltweb"
+homepage = "https://github.com/sumeeth05/boltweb"
+readme = "README.md"
+keywords = ["bolt-web", "bolt", "http", "web", "tokio", "hyper", "server"]
+categories = ["web", "framework"]
+
+[dependencies]
+radixmap = "0.2.4"
+hyper = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+http-body-util = "0.1"
+hyper-util = { version = "0.1", features = ["full"] }
+bytes = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.145"
+base64 = "0.22.1"
+url = "2"
+async-trait = "0.1.89"
+time = { version = "0.3", features = ["formatting"] }
+reqwest = { version = "0.12", features = ["json"] }
