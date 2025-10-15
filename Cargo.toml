@@ -9,7 +9,11 @@ repository = "https://github.com/sumeeth05/boltweb"
 homepage = "https://github.com/sumeeth05/boltweb"
 readme = "README.md"
 keywords = ["bolt-web", "bolt", "http", "web", "server"]
-categories = ["web", "framework"]
+categories = [
+    "web-programming",
+    "web-programming::http-server",
+    "web-programming::http-client",
+]
 
 [dependencies]
 radixmap = "0.2.4"
