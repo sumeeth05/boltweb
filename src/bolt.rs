@@ -27,6 +27,7 @@ pub mod response;
 mod router;
 pub mod types;
 
+#[warn(dead_code)]
 pub struct Bolt {
     router: Router,
     error_handler: Arc<dyn ErrorHandler>,
