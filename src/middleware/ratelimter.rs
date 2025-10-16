@@ -4,9 +4,9 @@ use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::Mutex;
 
-use crate::bolt::request::RequestBody;
-use crate::bolt::response::ResponseWriter;
-use crate::bolt::types::Middleware;
+use crate::request::RequestBody;
+use crate::response::ResponseWriter;
+use crate::types::Middleware;
 
 pub struct RateLimiterConfig {
     pub requests: u32,

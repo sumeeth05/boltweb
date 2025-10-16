@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 
-use crate::bolt::{request::RequestBody, response::ResponseWriter, types::Middleware};
+use crate::{request::RequestBody, response::ResponseWriter, types::Middleware};
 
 pub struct CorsConfig {
     pub allowed_origins: Vec<String>,

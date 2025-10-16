@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::bolt::{request::RequestBody, response::ResponseWriter, types::Middleware};
+use crate::{request::RequestBody, response::ResponseWriter, types::Middleware};
 
 pub struct Helmet;
 

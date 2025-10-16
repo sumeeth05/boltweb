@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use serde_json::json;
 
-use crate::bolt::{response::ResponseWriter, types::ErrorHandler};
+use crate::{response::ResponseWriter, types::ErrorHandler};
 
 pub struct DefaultErrorHandler;
 
