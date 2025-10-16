@@ -1,6 +1,6 @@
 use radixmap::RadixMap;
 
-use crate::bolt::types::{Handler, Method, Middleware};
+use crate::types::{Handler, Method, Middleware};
 use std::{collections::HashMap, sync::Arc};
 
 #[derive(Clone)]

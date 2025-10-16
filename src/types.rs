@@ -1,4 +1,4 @@
-use crate::bolt::{request::RequestBody, response::ResponseWriter};
+use crate::{request::RequestBody, response::ResponseWriter};
 use async_trait::async_trait;
 
 #[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::bolt::{
+use crate::{
     Bolt,
     types::{Handler, Method, Middleware},
 };
@@ -37,7 +37,7 @@ impl<'a> Group<'a> {
     }
 
     pub fn middleware(&mut self, path: &str, method: Option<Method>, mw: Arc<dyn Middleware>) {
-        use crate::bolt::types::Method::*;
+        use crate::types::Method::*;
 
         let full_path: String = format!("{}{}", self.prefix, path);
 
