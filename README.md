@@ -53,7 +53,7 @@ async fn hello(_req: &mut RequestBody, res: &mut ResponseWriter) {
     }));
 }
 
-bolt_handler!(hello)
+bolt_handler!(hello);
 
 ```
 
