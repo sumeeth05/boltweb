@@ -7,7 +7,10 @@ use hyper::{
     service::service_fn,
 };
 use hyper_util::rt::{TokioExecutor, TokioIo};
-use tokio::net::TcpListener;
+use tokio::{
+    io::{AsyncRead, AsyncWrite},
+    net::TcpListener,
+};
 
 use crate::{
     client::Client,
@@ -30,6 +33,9 @@ pub mod types;
 pub use async_trait;
 pub use paste;
 
+trait Io: AsyncRead + AsyncWrite + Unpin {}
+impl<T: AsyncRead + AsyncWrite + Unpin> Io for T {}
+
 #[allow(dead_code)]
 pub struct Bolt {
     router: Router,
@@ -51,6 +57,7 @@ impl Bolt {
         &self,
         addr: &str,
         mode: Mode,
+        tls: Option<(&str, &str)>,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         println!("⚡ A high performance & minimalist web framework in rust.");
         println!(
@@ -59,20 +66,41 @@ impl Bolt {
    / /_  ____  / / /_
   / __ \/ __ \/ / __/
  / /_/ / /_/ / / /_  
-/_.___/\____/_/\__/  v0.1.8
+/_.___/\____/_/\__/  v0.1.9
 "#
         );
 
-        println!("=> Server running on http://{}", addr);
+        println!(
+            "=> Server running on {}://{}",
+            if tls.is_some() { "https" } else { "http" },
+            addr
+        );
 
         let addr: SocketAddr = addr.parse().unwrap();
 
         let listener = TcpListener::bind(addr).await?;
         let router = Arc::new(self.router.clone());
 
+        let tls_acceptor = if let Some((pkcs12_path, password)) = tls {
+            let pkcs12 = std::fs::read(pkcs12_path)?;
+            let identity = tokio_native_tls::native_tls::Identity::from_pkcs12(&pkcs12, password)?;
+            Some(Arc::new(tokio_native_tls::TlsAcceptor::from(
+                tokio_native_tls::native_tls::TlsAcceptor::builder(identity).build()?,
+            )))
+        } else {
+            None
+        };
+
         loop {
             let (stream, _) = listener.accept().await?;
-            let io = TokioIo::new(stream);
+
+            let io: Box<dyn Io + Send> = if let Some(ref acceptor) = tls_acceptor {
+                Box::new(acceptor.accept(stream).await?)
+            } else {
+                Box::new(stream)
+            };
+
+            let io = TokioIo::new(io);
 
             let router = router.clone();
             let error_handler = self.error_handler.clone();

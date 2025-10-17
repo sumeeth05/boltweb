@@ -1,6 +1,6 @@
 [package]
 name = "bolt-web"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2024"
 authors = ["sumeeth sumeethveeramallu2001@gmail.com"]
 description = "⚡ A high-performance, minimalist web framework for Rust, inspired by Express.js and Gin."
@@ -30,3 +30,4 @@ async-trait = "0.1.89"
 time = { version = "0.3", features = ["formatting"] }
 hyper-tls = "0.6.0"
 paste = "1.0.15"
+tokio-native-tls = "0.3.1"
