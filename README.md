@@ -24,7 +24,7 @@ It focuses on **performance, simplicity**, and **full control** — ideal for RE
 ```rust
 use serde_json::json;
 
-use bolt::{
+use bolt-web::{
     Bolt,
     request::RequestBody,
     response::ResponseWriter,
@@ -40,18 +40,20 @@ async fn main() {
     app.middleware("/", None, Logger);
 
     // Define routes
-    app.get("/", handler);
+    app.get("/", HelloHandler);
 
 
     // Start the server
     app.run("127.0.0.1:8080", Mode::Http2).await.unwrap();
 }
 
-fn handler(_req: &mut RequestBody, res: &mut ResponseWriter) {
+async fn hello(_req: &mut RequestBody, res: &mut ResponseWriter) {
     res.json(&json!({
         "msg" : "hello"
     }));
 }
+
+bolt_handler!(hello)
 
 ```
 
@@ -60,10 +62,9 @@ fn handler(_req: &mut RequestBody, res: &mut ResponseWriter) {
 Use the built-in Client to make external API calls.
 
 ```rust
-use bolt::client::Client;
+use bolt-web::client::Client;
 
 let client = Client::new();
-
 let data = client.get("https://api.example.com/data").await?;
 
 ```
