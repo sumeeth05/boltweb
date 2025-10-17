@@ -1,6 +1,6 @@
 [package]
 name = "bolt-web"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 authors = ["sumeeth sumeethveeramallu2001@gmail.com"]
 description = "⚡ A high-performance, minimalist web framework for Rust, inspired by Express.js and Gin."
