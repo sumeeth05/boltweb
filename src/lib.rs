@@ -27,6 +27,7 @@ pub mod request;
 pub mod response;
 mod router;
 pub mod types;
+pub use paste;
 
 #[allow(dead_code)]
 pub struct Bolt {
