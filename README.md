@@ -13,6 +13,7 @@ It focuses on **performance, simplicity**, and **full control** — ideal for RE
 - 🔥 **Built in Router** - Fast and flexible routing system with path parameters, dynamic segments, and middleware chaining per route.
 - ⚙️ **Grouping Routes** — Simple builder-style API for responses.
 - 🧩 **Middleware System** — Add CORS, Helmet, Logging, Rate Limiting, Error handling easily.
+- 🧩 **Fully Supports Async** — Built on top of [`tokio`](https://tokio.rs/).
 - ⚙️ **Request & Response Abstraction** — Simple builder-style API for responses.
 - 🌍 **Minimal HTTP Client** — Builtin client for inter-service communication (OAuth, APIs, etc).
 
