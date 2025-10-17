@@ -4,7 +4,7 @@ macro_rules! bolt_handler {
         $crate::paste::paste! {
             pub struct [<$fn_name:camel Handler>];
 
-            #[async_trait::async_trait]
+            #[ $crate::async_trait::async_trait ]
             impl $crate::types::Handler for [<$fn_name:camel Handler>] {
                 async fn handle(
                     &self,
@@ -27,7 +27,7 @@ macro_rules! bolt_middleware {
         $crate::paste::paste! {
             pub struct [<$fn_name:camel Middleware>];
 
-            #[async_trait::async_trait]
+            #[ $crate::async_trait::async_trait ]
             impl $crate::types::Middleware for [<$fn_name:camel Middleware>] {
                 async fn run(&self, req: &mut $crate::request::RequestBody, res: &mut $crate::response::ResponseWriter) {
                     $fn_name(req, res).await;
@@ -46,7 +46,7 @@ macro_rules! bolt_error_handler {
         $crate::paste::paste! {
             pub struct [<$fn_name:camel ErrorHandler>];
 
-            #[async_trait::async_trait]
+            #[ $crate::async_trait::async_trait ]
             impl $crate::types::ErrorHandler for [<$fn_name:camel ErrorHandler>] {
                 async fn run(&self, msg: String, res: &mut $crate::response::ResponseWriter) {
                     $fn_name(msg, res).await;

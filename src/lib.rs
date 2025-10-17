@@ -27,6 +27,7 @@ pub mod request;
 pub mod response;
 mod router;
 pub mod types;
+pub use async_trait;
 pub use paste;
 
 #[allow(dead_code)]
@@ -58,7 +59,7 @@ impl Bolt {
    / /_  ____  / / /_
   / __ \/ __ \/ / __/
  / /_/ / /_/ / / /_  
-/_.___/\____/_/\__/  v0.1.7
+/_.___/\____/_/\__/  v0.1.8
 "#
         );
 
