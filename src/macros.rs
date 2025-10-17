@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! bolt_handler {
     ($fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             pub struct [<$fn_name:camel Handler>];
 
             #[async_trait::async_trait]
@@ -24,7 +24,7 @@ macro_rules! bolt_handler {
 #[macro_export]
 macro_rules! bolt_middleware {
     ($fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             pub struct [<$fn_name:camel Middleware>];
 
             #[async_trait::async_trait]
@@ -43,7 +43,7 @@ macro_rules! bolt_middleware {
 #[macro_export]
 macro_rules! bolt_error_handler {
     ($fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             pub struct [<$fn_name:camel ErrorHandler>];
 
             #[async_trait::async_trait]
