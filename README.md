@@ -56,7 +56,7 @@ async fn main() {
 
 
     // Start the server
-    app.run("127.0.0.1:8080", Mode::Http2).await.unwrap();
+    app.run("127.0.0.1:8080", Mode::Http1, None).await.unwrap();
 }
 
 async fn hello(_req: &mut RequestBody, res: &mut ResponseWriter) {
