@@ -5,7 +5,7 @@ use std::{collections::HashMap, sync::Arc};
 
 #[derive(Clone)]
 struct Node {
-    handlers: HashMap<Method, Handler>,
+    pub handlers: HashMap<Method, Arc<dyn Handler>>,
     middleware: HashMap<Method, Vec<Arc<dyn Middleware>>>,
 }
 
@@ -30,14 +30,17 @@ impl Router {
         }
     }
 
-    pub fn insert(&mut self, path: &str, method: Method, handler: Handler) {
+    pub fn insert<H>(&mut self, path: &str, method: Method, handler: H)
+    where
+        H: Handler + 'static,
+    {
         let key = path.as_bytes();
 
         if let Some(node) = self.router.get_mut(key) {
-            node.handlers.insert(method, handler);
+            node.handlers.insert(method, Arc::new(handler));
         } else {
             let mut node = Node::new();
-            node.handlers.insert(method, handler);
+            node.handlers.insert(method, Arc::new(handler));
             let _ = self.router.insert(key.to_vec(), node);
         }
     }
@@ -54,7 +57,11 @@ impl Router {
         }
     }
 
-    pub fn find(&self, path: &str, method: Method) -> Option<(&Handler, HashMap<String, String>)> {
+    pub fn find(
+        &self,
+        path: &str,
+        method: Method,
+    ) -> Option<(&Arc<dyn Handler>, HashMap<String, String>)> {
         for (key, node) in self.router.iter() {
             let route = std::str::from_utf8(key).unwrap();
             if let Some(params) = self.match_path(route, path) {

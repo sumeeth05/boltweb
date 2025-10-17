@@ -1,12 +1,10 @@
-use async_trait::async_trait;
+use crate::{
+    bolt_middleware,
+    {request::RequestBody, response::ResponseWriter},
+};
 
-use crate::{request::RequestBody, response::ResponseWriter, types::Middleware};
-
-pub struct Logger;
-
-#[async_trait]
-impl Middleware for Logger {
-    async fn run(&self, req: &mut RequestBody, _res: &mut ResponseWriter) {
-        println!("[{}] {}", req.method(), req.path());
-    }
+pub async fn logger(req: &mut RequestBody, _res: &mut ResponseWriter) {
+    println!("[{}] {}", req.method(), req.path());
 }
+
+bolt_middleware!(logger);

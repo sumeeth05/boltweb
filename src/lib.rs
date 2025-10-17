@@ -21,18 +21,21 @@ use crate::{
 
 pub mod client;
 mod group;
+pub mod macros;
 pub mod middleware;
 pub mod request;
 pub mod response;
 mod router;
 pub mod types;
 
+#[allow(dead_code)]
 pub struct Bolt {
     router: Router,
     error_handler: Arc<dyn ErrorHandler>,
     client: Client,
 }
 
+#[allow(dead_code)]
 impl Bolt {
     pub fn new() -> Self {
         Self {
@@ -112,7 +115,8 @@ impl Bolt {
                     if !res_body.has_error() {
                         if let Some((handler, params)) = router.find(&path, method) {
                             req_body.set_params(params);
-                            handler(&mut req_body, &mut res_body);
+
+                            handler.handle(&mut req_body, &mut res_body).await;
                         } else {
                             let method_str = match *req_body.method() {
                                 hyper::Method::GET => "GET",
@@ -163,27 +167,45 @@ impl Bolt {
         }
     }
 
-    fn add_route(&mut self, method: Method, path: &str, handler: Handler) {
+    fn add_route<H>(&mut self, method: Method, path: &str, handler: H)
+    where
+        H: Handler + 'static,
+    {
         self.router.insert(path, method, handler);
     }
 
-    pub fn get(&mut self, path: &str, handler: Handler) {
+    pub fn get<H>(&mut self, path: &str, handler: H)
+    where
+        H: Handler + 'static,
+    {
         self.add_route(Method::GET, path, handler);
     }
 
-    pub fn post(&mut self, path: &str, handler: Handler) {
+    pub fn post<H>(&mut self, path: &str, handler: H)
+    where
+        H: Handler + 'static,
+    {
         self.add_route(Method::POST, path, handler);
     }
 
-    pub fn put(&mut self, path: &str, handler: Handler) {
+    pub fn put<H>(&mut self, path: &str, handler: H)
+    where
+        H: Handler + 'static,
+    {
         self.add_route(Method::PUT, path, handler);
     }
 
-    pub fn patch(&mut self, path: &str, handler: Handler) {
+    pub fn patch<H>(&mut self, path: &str, handler: H)
+    where
+        H: Handler + 'static,
+    {
         self.add_route(Method::PATCH, path, handler);
     }
 
-    pub fn delete(&mut self, path: &str, handler: Handler) {
+    pub fn delete<H>(&mut self, path: &str, handler: H)
+    where
+        H: Handler + 'static,
+    {
         self.add_route(Method::DELETE, path, handler);
     }
 

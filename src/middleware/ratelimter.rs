@@ -19,6 +19,7 @@ pub struct RateLimiter {
     state: Arc<Mutex<HashMap<String, (u32, Instant)>>>,
 }
 
+#[allow(dead_code)]
 impl RateLimiter {
     pub fn new(config: RateLimiterConfig) -> Self {
         Self {

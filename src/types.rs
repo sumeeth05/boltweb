@@ -14,12 +14,11 @@ pub enum Method {
 }
 
 #[derive(Eq, PartialEq)]
+#[allow(dead_code)]
 pub enum Mode {
     Http1,
     Http2,
 }
-
-pub type Handler = fn(&mut RequestBody, &mut ResponseWriter);
 
 #[async_trait]
 pub trait Middleware: Send + Sync {
@@ -29,4 +28,9 @@ pub trait Middleware: Send + Sync {
 #[async_trait]
 pub trait ErrorHandler: Send + Sync {
     async fn run(&self, msg: String, res: &mut ResponseWriter);
+}
+
+#[async_trait]
+pub trait Handler: Send + Sync {
+    async fn handle(&self, req: &mut RequestBody, res: &mut ResponseWriter);
 }

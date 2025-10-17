@@ -15,6 +15,7 @@ pub struct ResponseWriter {
     pub has_error: bool,
 }
 
+#[allow(dead_code)]
 impl ResponseWriter {
     pub fn new() -> Self {
         Self {

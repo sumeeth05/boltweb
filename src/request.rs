@@ -12,6 +12,7 @@ pub struct RequestBody {
     params: HashMap<String, String>,
 }
 
+#[allow(dead_code)]
 impl RequestBody {
     pub fn new(req: Request<Incoming>) -> Self {
         Self {
