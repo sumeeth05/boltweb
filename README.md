@@ -36,7 +36,7 @@ It focuses on **performance, simplicity**, and **full control** — ideal for RE
 ```rust
 use serde_json::json;
 
-use bolt-web::{
+use bolt_web::{
     Bolt,
     request::RequestBody,
     response::ResponseWriter,
@@ -49,7 +49,7 @@ async fn main() {
     let mut app = Bolt::new();
 
     // Register global middleware
-    app.middleware("/", None, Logger);
+    app.middleware("/", None, LoggerMiddleware);
 
     // Define routes
     app.get("/", HelloHandler);
