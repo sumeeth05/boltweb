@@ -143,7 +143,7 @@ impl RequestBody {
     }
 
     pub async fn multipart_form(
-        mut self,
+        self,
     ) -> Result<(HashMap<String, String>, HashMap<String, FormFile>), Box<dyn std::error::Error>>
     {
         let content_type = self
