@@ -4,19 +4,12 @@ use bytes::Bytes;
 use http_body_util::BodyExt;
 use hyper::header::HeaderName;
 use hyper::{Request, Uri, Version, body::Incoming, header::HeaderValue};
-use multer::Multipart;
 use serde::de::DeserializeOwned;
 use url::form_urlencoded;
 
 pub struct RequestBody {
     inner: Request<Incoming>,
     params: HashMap<String, String>,
-}
-
-pub struct FormFile {
-    pub filename: Option<String>,
-    pub content_type: Option<String>,
-    pub data: bytes::Bytes,
 }
 
 #[allow(dead_code)]
@@ -122,61 +115,4 @@ impl RequestBody {
             })
     }
 
-    pub async fn form(self) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
-        let content_type = self
-            .inner
-            .headers()
-            .get("Content-Type")
-            .and_then(|v| v.to_str().ok())
-            .unwrap_or("");
-
-        if !content_type.starts_with("application/x-www-form-urlencoded") {
-            return Err("Invalid Content-Type for form".into());
-        }
-
-        let body = self.bytes().await?;
-        let form_data = form_urlencoded::parse(&body)
-            .into_owned()
-            .collect::<HashMap<String, String>>();
-
-        Ok(form_data)
-    }
-
-    pub async fn multipart_form(
-        self,
-    ) -> Result<(HashMap<String, String>, HashMap<String, FormFile>), Box<dyn std::error::Error>>
-    {
-        let content_type = self
-            .inner
-            .headers()
-            .get("Content-Type")
-            .and_then(|v| v.to_str().ok())
-            .ok_or("Missing Content-Type")?;
-
-        let boundary = multer::parse_boundary(content_type)?;
-        let mut multipart = Multipart::new(self.inner.into_body().into_data_stream(), boundary);
-
-        let mut fields = HashMap::new();
-        let mut files = HashMap::new();
-
-        while let Some(field) = multipart.next_field().await? {
-            let name = field.name().unwrap_or("").to_string();
-
-            if let Some(file_name) = field.file_name() {
-                // It's a file field
-                let file = FormFile {
-                    filename: Some(file_name.to_string()),
-                    content_type: field.content_type().map(|ct| ct.to_string()),
-                    data: field.bytes().await?,
-                };
-                files.insert(name, file);
-            } else {
-                // It's a text field
-                let text = field.text().await?;
-                fields.insert(name, text);
-            }
-        }
-
-        Ok((fields, files))
-    }
 }
