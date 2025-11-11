@@ -1,6 +1,6 @@
 [package]
 name = "bolt-web"
-version = "0.1.9"
+version = "0.2.0"
 edition = "2024"
 authors = ["sumeeth sumeethveeramallu2001@gmail.com"]
 description = "⚡ A high-performance, minimalist web framework for Rust, inspired by Express.js and Gin."
@@ -38,3 +38,4 @@ futures-util = { version = "0.3" }
 uuid = { version = "1", features = ["v4"] }
 mime_guess = "2"
 num_cpus = "1.17.0"
+bolt-web-macro = "0.1.1"

@@ -72,10 +72,11 @@ checksum = "2261d10cca569e4643e526d8dc2e62e433cc8aba21ab764233731f8d369bf394"
 
 [[package]]
 name = "bolt-web"
-version = "0.1.9"
+version = "0.2.0"
 dependencies = [
  "async-trait",
  "base64",
+ "bolt-web-macro",
  "bytes",
  "futures-util",
  "http-body-util",
@@ -95,6 +96,18 @@ dependencies = [
  "tokio-native-tls",
  "url",
  "uuid",
+]
+
+[[package]]
+name = "bolt-web-macro"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7ca8076029433eafc055bd91ab887d10669b11867a5a06a28cd7d17982a44dc"
+dependencies = [
+ "num_cpus",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
