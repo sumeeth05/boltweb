@@ -284,7 +284,10 @@ impl Bolt {
         }
     }
 
-    pub fn set_error_handler(&mut self, handler: Arc<dyn ErrorHandler>) {
-        self.error_handler = handler;
+    pub fn set_error_handler<E>(&mut self, handler: E)
+    where
+        E: ErrorHandler + 'static,
+    {
+        self.error_handler = Arc::new(handler);
     }
 }
