@@ -40,10 +40,10 @@ use bolt_web::{
     Bolt,
     request::RequestBody,
     response::ResponseWriter,
-    middleware::{logger::Logger},
+    middleware::{logger::LoggerMiddleware},
 };
 
-#[tokio::main]
+#[bolt_web::main]
 async fn main() {
     // Initialize server
     let mut app = Bolt::new();
@@ -59,7 +59,7 @@ async fn main() {
     app.run("127.0.0.1:8080", Mode::Http1, None).await.unwrap();
 }
 
-async fn hello(_req: &mut RequestBody, res: &mut ResponseWriter) {
+async fn hello(_: &mut RequestBody, res: &mut ResponseWriter) {
     res.json(&json!({
         "msg" : "hello"
     }));
