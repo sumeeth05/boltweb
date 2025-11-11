@@ -67,10 +67,11 @@ bolt_handler!(hello);
 Use the built-in Client to make external API calls.
 
 ```rust
-use bolt-web::client::Client;
+use bolt_web::Client;
 
 let client = Client::new();
-let data = client.get("https://api.example.com/data").await?;
+
+let joke: Joke = client.get("https://icanhazdadjoke.com/").await.unwrap();
 
 ```
 
