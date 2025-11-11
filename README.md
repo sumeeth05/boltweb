@@ -49,6 +49,7 @@ async fn main() -> BoltResult<()> {
     app.get("/", HelloHandler);
 
     app.run("127.0.0.1:8080", Mode::Http1, None).await.unwrap();
+    Ok(())
 }
 
 async fn hello(_: &mut RequestBody, res: &mut ResponseWriter) {
