@@ -8,6 +8,8 @@ use hyper_util::rt::TokioExecutor;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 
+use crate::types::BoltError;
+
 #[derive(Clone)]
 #[allow(dead_code)]
 pub struct Client {
@@ -22,11 +24,7 @@ impl Client {
         Self { client }
     }
 
-    pub async fn fetch(
-        &self,
-        url: &str,
-    ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-        // Build the GET request
+    pub async fn fetch(&self, url: &str) -> Result<String, BoltError> {
         let req = Request::builder()
             .method(Method::GET)
             .uri(url)
@@ -44,7 +42,7 @@ impl Client {
         method: Method,
         url: &str,
         body: &T,
-    ) -> Result<U, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<U, BoltError> {
         let body_bytes = serde_json::to_vec(body)?;
         let req = Request::builder()
             .method(method)
@@ -56,10 +54,7 @@ impl Client {
         Ok(serde_json::from_slice(&body_bytes)?)
     }
 
-    pub async fn get<T: DeserializeOwned>(
-        &self,
-        url: &str,
-    ) -> Result<T, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn get<T: DeserializeOwned>(&self, url: &str) -> Result<T, BoltError> {
         let req = Request::builder()
             .method(Method::GET)
             .uri(url)
@@ -77,7 +72,7 @@ impl Client {
         &self,
         url: &str,
         body: &T,
-    ) -> Result<U, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<U, BoltError> {
         self.send_json(Method::POST, url, body).await
     }
 
@@ -85,7 +80,7 @@ impl Client {
         &self,
         url: &str,
         body: &T,
-    ) -> Result<U, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<U, BoltError> {
         self.send_json(Method::PUT, url, body).await
     }
 
@@ -93,14 +88,11 @@ impl Client {
         &self,
         url: &str,
         body: &T,
-    ) -> Result<U, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<U, BoltError> {
         self.send_json(Method::PATCH, url, body).await
     }
 
-    pub async fn delete<U: DeserializeOwned>(
-        &self,
-        url: &str,
-    ) -> Result<U, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn delete<U: DeserializeOwned>(&self, url: &str) -> Result<U, BoltError> {
         let req = Request::builder()
             .method(Method::DELETE)
             .uri(url)
@@ -117,7 +109,7 @@ impl Client {
         &self,
         url: &str,
         body: &T,
-    ) -> Result<U, Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<U, BoltError> {
         self.send_json(Method::DELETE, url, body).await
     }
 }

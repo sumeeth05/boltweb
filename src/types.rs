@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{request::RequestBody, response::ResponseWriter};
 use async_trait::async_trait;
 
@@ -34,3 +36,24 @@ pub trait ErrorHandler: Send + Sync {
 pub trait Handler: Send + Sync {
     async fn handle(&self, req: &mut RequestBody, res: &mut ResponseWriter);
 }
+
+#[allow(dead_code)]
+#[derive(Debug, Clone)]
+pub struct FormFile {
+    pub field_name: String,
+    pub file_name: String,
+    pub content_type: String,
+    pub temp_path: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct FormData {
+    pub files: Vec<FormFile>,
+    pub fields: HashMap<String, String>,
+}
+
+#[allow(dead_code)]
+pub type BoltError = Box<dyn std::error::Error + Send + Sync>;
+
+#[allow(dead_code)]
+pub type BoltResult<T> = Result<T, BoltError>;

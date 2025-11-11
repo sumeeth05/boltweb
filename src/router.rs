@@ -57,44 +57,6 @@ impl Router {
         }
     }
 
-    pub fn find(
-        &self,
-        path: &str,
-        method: Method,
-    ) -> Option<(&Arc<dyn Handler>, HashMap<String, String>)> {
-        for (key, node) in self.router.iter() {
-            let route = std::str::from_utf8(key).unwrap();
-            if let Some(params) = self.match_path(route, path) {
-                if let Some(handler) = node.handlers.get(&method) {
-                    return Some((handler, params));
-                }
-            }
-        }
-        None
-    }
-
-    pub fn match_path<'a>(&self, route: &str, uri: &str) -> Option<HashMap<String, String>> {
-        let route_segments: Vec<&str> = route.trim_matches('/').split('/').collect();
-        let uri_segments: Vec<&str> = uri.trim_matches('/').split('/').collect();
-
-        if route_segments.len() != uri_segments.len() {
-            return None;
-        }
-
-        let mut params = HashMap::new();
-
-        for (route, uri) in route_segments.iter().zip(uri_segments.iter()) {
-            if route.starts_with(':') {
-                let key = route.trim_start_matches(':').to_string();
-                params.insert(key, uri.to_string());
-            } else if route != uri {
-                return None;
-            }
-        }
-
-        Some(params)
-    }
-
     pub fn collect_middleware(&self, path: &str, method: Method) -> Vec<Arc<dyn Middleware>> {
         let mut result = Vec::new();
 
@@ -109,5 +71,83 @@ impl Router {
         }
 
         result.into_iter().cloned().collect()
+    }
+
+    pub fn match_path(&self, route: &str, uri: &str) -> Option<HashMap<String, String>> {
+        let route_segments: Vec<&str> = route.trim_matches('/').split('/').collect();
+        let uri_segments: Vec<&str> = uri.trim_matches('/').split('/').collect();
+
+        let mut params = HashMap::new();
+
+        for (i, route_seg) in route_segments.iter().enumerate() {
+            if *route_seg == "*" {
+                return Some(params);
+            } else if route_seg.ends_with('*') {
+                let key = route_seg
+                    .trim_start_matches(':')
+                    .trim_end_matches('*')
+                    .to_string();
+
+                let joined = uri_segments[i..].join("/");
+
+                params.insert(key, joined);
+
+                return Some(params);
+            } else if let Some(uri_seg) = uri_segments.get(i) {
+                if route_seg.starts_with(':') {
+                    let key = route_seg.trim_start_matches(':').to_string();
+
+                    params.insert(key, (*uri_seg).to_string());
+                } else if route_seg != uri_seg {
+                    return None;
+                }
+            } else {
+                return None;
+            }
+        }
+
+        if uri_segments.len() == route_segments.len() {
+            Some(params)
+        } else {
+            None
+        }
+    }
+
+    pub fn find(
+        &self,
+        path: &str,
+        method: Method,
+    ) -> Option<(&Arc<dyn Handler>, HashMap<String, String>)> {
+        let mut best_match: Option<(&Arc<dyn Handler>, HashMap<String, String>, usize)> = None;
+
+        for (key, node) in self.router.iter() {
+            let route = std::str::from_utf8(key).unwrap();
+
+            if let Some(params) = self.match_path(route, path) {
+                if let Some(handler) = node.handlers.get(&method) {
+                    let score = route
+                        .split('/')
+                        .filter(|s| !s.is_empty())
+                        .map(|s| {
+                            if s.starts_with(':') || s.ends_with('*') || s == "*" {
+                                0
+                            } else {
+                                1
+                            }
+                        })
+                        .sum();
+
+                    if best_match.is_none() {
+                        best_match = Some((handler, params, score));
+                    } else {
+                        if score > best_match.as_ref().unwrap().2 {
+                            best_match = Some((handler, params, score));
+                        }
+                    }
+                }
+            }
+        }
+
+        best_match.map(|(handler, params, _)| (handler, params))
     }
 }

@@ -1,7 +1,4 @@
-use crate::{
-    bolt_middleware,
-    {request::RequestBody, response::ResponseWriter},
-};
+use crate::{bolt_middleware, request::RequestBody, response::ResponseWriter};
 
 pub async fn helmet(_req: &mut RequestBody, res: &mut ResponseWriter) {
     res.set_header("X-DNS-Prefetch-Control", "off");

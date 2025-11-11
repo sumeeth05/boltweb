@@ -4,6 +4,7 @@ use async_trait::async_trait;
 
 use crate::{request::RequestBody, response::ResponseWriter, types::Middleware};
 
+#[allow(dead_code)]
 pub struct CorsConfig {
     pub allowed_origins: Vec<String>,
     pub allow_all: bool,
@@ -26,6 +27,7 @@ impl Default for CorsConfig {
     }
 }
 
+#[allow(dead_code)]
 pub struct Cors {
     pub config: Arc<CorsConfig>,
 }

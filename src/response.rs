@@ -5,8 +5,12 @@ use hyper::{
     HeaderMap, Response,
     header::{HeaderName, HeaderValue},
 };
+use mime_guess::from_path;
 use serde::Serialize;
+use std::path::Path;
 use time::{Duration, OffsetDateTime, format_description::well_known::Rfc2822};
+use tokio::fs;
+use tokio::io::AsyncReadExt;
 
 pub struct ResponseWriter {
     pub body: String,
@@ -67,6 +71,29 @@ impl ResponseWriter {
         self.set_header("Content-Type", "text/html; charset=utf-8");
         self.body = html.to_string();
         self
+    }
+
+    pub async fn file<P: AsRef<Path>>(&mut self, path: P) {
+        let path_ref = path.as_ref();
+
+        match fs::File::open(path_ref).await {
+            Ok(mut file) => {
+                let mut buf = Vec::new();
+                if let Err(e) = file.read_to_end(&mut buf).await {
+                    self.error(500, &format!("Failed to read file: {}", e));
+                    return;
+                }
+
+                let mime_type = from_path(path_ref).first_or_octet_stream().to_string();
+
+                self.status(200)
+                    .set_header("Content-Type", &mime_type)
+                    .bytes(&buf);
+            }
+            Err(_) => {
+                self.error(404, "File not found");
+            }
+        }
     }
 
     pub fn bytes(&mut self, bytes: &[u8]) -> &mut Self {
@@ -144,5 +171,11 @@ impl ResponseWriter {
         }
 
         builder.body(Full::new(Bytes::from(self.body))).unwrap()
+    }
+
+    pub fn strip_header(&mut self, key: &str) {
+        if let Ok(key_name) = hyper::header::HeaderName::from_bytes(key.as_bytes()) {
+            self.headers.remove(key_name);
+        }
     }
 }

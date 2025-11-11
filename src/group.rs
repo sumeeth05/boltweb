@@ -67,4 +67,16 @@ impl<'a> Group<'a> {
             }
         }
     }
+
+    pub fn group(&'a mut self, path: &str) -> Group<'a> {
+        let base = self.prefix.trim_end_matches('/');
+
+        let child_path = path.trim_start_matches('/');
+
+        let new_prefix = format!("{}/{}", base, child_path);
+        Group {
+            prefix: new_prefix,
+            app: self.app,
+        }
+    }
 }

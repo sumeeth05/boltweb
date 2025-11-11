@@ -7,6 +7,7 @@ use hyper::{
     service::service_fn,
 };
 use hyper_util::rt::{TokioExecutor, TokioIo};
+
 use tokio::{
     io::{AsyncRead, AsyncWrite},
     net::TcpListener,
@@ -19,7 +20,7 @@ use crate::{
     request::RequestBody,
     response::ResponseWriter,
     router::Router,
-    types::{ErrorHandler, Handler, Method, Middleware, Mode},
+    types::{BoltError, ErrorHandler, Handler, Method, Middleware, Mode},
 };
 
 pub mod client;
@@ -30,7 +31,6 @@ pub mod request;
 pub mod response;
 mod router;
 pub mod types;
-pub use async_trait;
 pub use paste;
 
 trait Io: AsyncRead + AsyncWrite + Unpin {}
@@ -43,6 +43,7 @@ pub struct Bolt {
     client: Client,
 }
 
+#[allow(unused_variables)]
 #[allow(dead_code)]
 impl Bolt {
     pub fn new() -> Self {
@@ -58,7 +59,7 @@ impl Bolt {
         addr: &str,
         mode: Mode,
         tls: Option<(&str, &str)>,
-    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    ) -> Result<(), BoltError> {
         println!("⚡ A high performance & minimalist web framework in rust.");
         println!(
             r#"
@@ -66,12 +67,12 @@ impl Bolt {
    / /_  ____  / / /_
   / __ \/ __ \/ / __/
  / /_/ / /_/ / / /_  
-/_.___/\____/_/\__/  v0.1.9
+/_.___/\____/_/\__/  v0.1.0
 "#
         );
 
         println!(
-            "=> Server running on {}://{}",
+            ">> Server running on {}://{}",
             if tls.is_some() { "https" } else { "http" },
             addr
         );
@@ -169,6 +170,19 @@ impl Bolt {
                         error_handler.run(msg, &mut res_body).await;
                     }
 
+                    req_body.cleanup().await;
+
+                    if req_body.log {
+                        println!(
+                            "[LOG] method={} path={} status={}",
+                            req_body.method(),
+                            path,
+                            res_body.status,
+                        );
+                    }
+
+                    res_body.strip_header("X-Internal-Request-Start");
+
                     Ok::<_, Infallible>(res_body.into_response())
                 }
             });
@@ -239,7 +253,7 @@ impl Bolt {
         self.add_route(Method::DELETE, path, handler);
     }
 
-    pub fn group(&mut self, path: &str) -> Group {
+    pub fn group<'a>(&'a mut self, path: &str) -> Group<'a> {
         Group {
             prefix: path.to_string(),
             app: self,
