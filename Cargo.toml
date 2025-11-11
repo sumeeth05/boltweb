@@ -37,5 +37,4 @@ mime = "0.3.17"
 futures-util = { version = "0.3" }
 uuid = { version = "1", features = ["v4"] }
 mime_guess = "2"
-num_cpus = "1.17.0"
 bolt-web-macro = "0.1.1"

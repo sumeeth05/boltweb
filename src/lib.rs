@@ -20,7 +20,7 @@ use crate::{
     request::RequestBody,
     response::ResponseWriter,
     router::Router,
-    types::{BoltError, ErrorHandler, Handler, Method, Middleware, Mode},
+    types::{BoltResult, ErrorHandler, Handler, Method, Middleware, Mode},
 };
 
 pub mod client;
@@ -32,7 +32,6 @@ pub mod response;
 mod router;
 pub mod types;
 pub use bolt_web_macro::main;
-pub use num_cpus;
 pub use paste;
 pub use tokio;
 
@@ -57,12 +56,7 @@ impl Bolt {
         }
     }
 
-    pub async fn run(
-        &self,
-        addr: &str,
-        mode: Mode,
-        tls: Option<(&str, &str)>,
-    ) -> Result<(), BoltError> {
+    pub async fn run(&self, addr: &str, mode: Mode, tls: Option<(&str, &str)>) -> BoltResult<()> {
         println!("⚡ A high performance & minimalist web framework in rust.");
         println!(
             r#"

@@ -86,7 +86,6 @@ dependencies = [
  "mime",
  "mime_guess",
  "multer",
- "num_cpus",
  "paste",
  "radixmap",
  "serde",
