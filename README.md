@@ -24,7 +24,7 @@ It focuses on **performance, simplicity**, and **full control** — ideal for RE
 ```rust
 
     [dependencies]
-    bolt-web = "0.2.6"
+    bolt-web = "0.2.7"
     serde = { version = "1.0", features = ["derive"] }
     serde_json = "1.0.145"
 
