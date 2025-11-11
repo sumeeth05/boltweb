@@ -40,22 +40,15 @@ use bolt_web::{
     Bolt,
     request::RequestBody,
     response::ResponseWriter,
-    middleware::{logger::LoggerMiddleware},
+    types::{BoltResult, Mode},
 };
 
 #[bolt_web::main]
-async fn main() {
-    // Initialize server
+async fn main() -> BoltResult<()> {
     let mut app = Bolt::new();
 
-    // Register global middleware
-    app.middleware("/", None, LoggerMiddleware);
-
-    // Define routes
     app.get("/", HelloHandler);
 
-
-    // Start the server
     app.run("127.0.0.1:8080", Mode::Http1, None).await.unwrap();
 }
 
