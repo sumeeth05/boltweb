@@ -45,6 +45,8 @@ mod router;
 mod tls;
 pub mod types;
 pub use bolt_web_macro::main;
+pub use paste;
+pub use tokio;
 
 trait Io: AsyncRead + AsyncWrite + Unpin {}
 impl<T: AsyncRead + AsyncWrite + Unpin> Io for T {}

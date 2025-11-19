@@ -53,8 +53,6 @@ async fn hello(_: &mut RequestBody, res: &mut ResponseWriter) {
 }
 ```
 
----
-
 ## 🧭 Routing
 
 Bolt offers a clean and expressive routing system.
