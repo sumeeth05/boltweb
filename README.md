@@ -6,8 +6,6 @@ Bolt is a lightweight, modular, and fully asynchronous web framework built on to
 [`hyper`](https://github.com/hyperium/hyper) and [`tokio`](https://tokio.rs/).
 Its goal is **performance, simplicity, and control** — perfect for REST APIs, microservices, and backend systems.
 
----
-
 ## 🚀 Features
 
 - 🌐 **HTTP/1.x & HTTP/2 Support** — Built-in protocol selection.
@@ -18,8 +16,6 @@ Its goal is **performance, simplicity, and control** — perfect for REST APIs, 
 - 🔒 **Security Built-in** — Panic protection, timeouts, connection limits, header/body limits.
 - 🌐 **Minimal HTTP Client** — Useful for internal service calls.
 
----
-
 ## 📦 Dependencies
 
 ```toml
@@ -28,8 +24,6 @@ bolt-web = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 ```
-
----
 
 ## 🦀 Basic Example
 
@@ -99,8 +93,6 @@ Get!(app, "/files/*path", get_file);
 let page = req.query_param("page").unwrap_or("1".into());
 ```
 
----
-
 ## 🗂 Route Groups
 
 ```rust
@@ -115,8 +107,6 @@ v1.get("/users", list_users);
 
 Groups make large APIs clean and maintainable.
 
----
-
 ## 🔧 Middleware
 
 Middleware can run **before handlers** and can short-circuit responses.
@@ -128,8 +118,6 @@ async fn log(req: &mut RequestBody, _res: &mut ResponseWriter) {
 
 Middleware!(app, "/", log);
 ```
-
----
 
 ## 🍪 Cookies
 
@@ -147,8 +135,6 @@ res.cookie(
 );
 ```
 
----
-
 ## 🌐 HTTP Client
 
 Bolt includes a minimal async HTTP client for external APIs.
@@ -160,8 +146,6 @@ let client = Client::new();
 
 let joke: Joke = client.get("https://icanhazdadjoke.com", &None).await?;
 ```
-
----
 
 ## 🛡 Security
 
@@ -175,8 +159,6 @@ Bolt includes multiple production-grade protections:
 - Connection limits
 - Graceful shutdown
 - TLS support
-
----
 
 ## 🧠 License
 
