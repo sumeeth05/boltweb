@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! handler {
     ($fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             pub struct [<$fn_name:camel Handler>];
 
             #[async_trait::async_trait]
@@ -24,7 +24,7 @@ macro_rules! handler {
 #[macro_export]
 macro_rules! middleware {
     ($fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             pub struct [<$fn_name:camel Middleware>];
 
             #[async_trait::async_trait]
@@ -43,7 +43,7 @@ macro_rules! middleware {
 #[macro_export]
 macro_rules! error {
     ($fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             pub struct [<$fn_name:camel ErrorHandler>];
 
             #[async_trait::async_trait]
@@ -62,7 +62,7 @@ macro_rules! error {
 #[macro_export]
 macro_rules! Get {
     ($app:ident, $path:expr, $fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::handler!($fn_name);
         $app.get($path, [<$fn_name:camel>]);
         }
@@ -72,7 +72,7 @@ macro_rules! Get {
 #[macro_export]
 macro_rules! Post {
     ($app:ident, $path:expr, $fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::handler!($fn_name);
         $app.post($path, [<$fn_name:camel>]);
         }
@@ -82,7 +82,7 @@ macro_rules! Post {
 #[macro_export]
 macro_rules! Patch {
     ($app:ident, $path:expr, $fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::handler!($fn_name);
         $app.patch($path, [<$fn_name:camel>]);
         }
@@ -92,7 +92,7 @@ macro_rules! Patch {
 #[macro_export]
 macro_rules! Put {
     ($app:ident, $path:expr, $fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::handler!($fn_name);
         $app.put($path, [<$fn_name:camel>]);
         }
@@ -102,7 +102,7 @@ macro_rules! Put {
 #[macro_export]
 macro_rules! Delete {
     ($app:ident, $path:expr, $fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::handler!($fn_name);
         $app.delete($path, [<$fn_name:camel>]);
         }
@@ -112,7 +112,7 @@ macro_rules! Delete {
 #[macro_export]
 macro_rules! Middleware {
     ($app:ident, $path:expr, $method:ident ,$fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::middleware!($fn_name);
 
             $app.middleware($path, Some($crate::types::Method::$method) , [<$fn_name:camel>]);
@@ -120,7 +120,7 @@ macro_rules! Middleware {
     };
 
     ($app:ident, $path:expr ,$fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::middleware!($fn_name);
             $app.middleware($path, None , [<$fn_name:camel>]);
         }
@@ -130,7 +130,7 @@ macro_rules! Middleware {
 #[macro_export]
 macro_rules! Error {
     ($app:ident,$fn_name:ident) => {
-        paste::paste! {
+        $crate::paste::paste! {
             $crate::error!($fn_name);
 
             $app.set_error_handler([<$fn_name:camel>]);
