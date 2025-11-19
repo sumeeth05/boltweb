@@ -115,7 +115,7 @@ checksum = "2261d10cca569e4643e526d8dc2e62e433cc8aba21ab764233731f8d369bf394"
 
 [[package]]
 name = "bolt-web"
-version = "0.2.9"
+version = "3.0.0"
 dependencies = [
  "async-trait",
  "base64",
