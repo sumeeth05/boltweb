@@ -44,6 +44,7 @@ pub mod response;
 mod router;
 mod tls;
 pub mod types;
+pub use async_trait;
 pub use bolt_web_macro::main;
 pub use paste;
 pub use tokio;
