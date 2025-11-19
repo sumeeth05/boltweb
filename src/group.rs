@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use crate::{
-    Bolt,
+    App,
     types::{Handler, Method, Middleware},
 };
 
 #[allow(dead_code)]
 pub struct Group<'a> {
     pub prefix: String,
-    pub app: &'a mut Bolt,
+    pub app: &'a mut App,
 }
 
 #[allow(dead_code)]

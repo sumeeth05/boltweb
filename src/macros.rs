@@ -1,12 +1,12 @@
 #[macro_export]
-macro_rules! bolt_handler {
+macro_rules! handler {
     ($fn_name:ident) => {
-        $crate::paste::paste! {
+        paste::paste! {
             pub struct [<$fn_name:camel Handler>];
 
-            #[ $crate::async_trait::async_trait ]
+            #[async_trait::async_trait]
             impl $crate::types::Handler for [<$fn_name:camel Handler>] {
-                async fn handle(
+                async fn run(
                     &self,
                     req: &mut $crate::request::RequestBody,
                     res: &mut $crate::response::ResponseWriter
@@ -14,20 +14,20 @@ macro_rules! bolt_handler {
                     $fn_name(req, res).await;
                 }
             }
-
             #[allow(non_upper_case_globals)]
-            pub const [<$fn_name:upper _HANDLER>]: [<$fn_name:camel Handler>] = [<$fn_name:camel Handler>];
+            pub const [<$fn_name:camel>]: [<$fn_name:camel Handler>] = [<$fn_name:camel Handler>];
+
         }
     };
 }
 
 #[macro_export]
-macro_rules! bolt_middleware {
+macro_rules! middleware {
     ($fn_name:ident) => {
-        $crate::paste::paste! {
+        paste::paste! {
             pub struct [<$fn_name:camel Middleware>];
 
-            #[ $crate::async_trait::async_trait ]
+            #[async_trait::async_trait]
             impl $crate::types::Middleware for [<$fn_name:camel Middleware>] {
                 async fn run(&self, req: &mut $crate::request::RequestBody, res: &mut $crate::response::ResponseWriter) {
                     $fn_name(req, res).await;
@@ -35,26 +35,105 @@ macro_rules! bolt_middleware {
             }
 
             #[allow(dead_code, non_upper_case_globals)]
-            pub const [<$fn_name:upper _MIDDLEWARE>]: [<$fn_name:camel Middleware>] = [<$fn_name:camel Middleware>];
+            pub const [<$fn_name:camel>]: [<$fn_name:camel Middleware>] = [<$fn_name:camel Middleware>];
         }
     };
 }
 
 #[macro_export]
-macro_rules! bolt_error_handler {
+macro_rules! error {
     ($fn_name:ident) => {
-        $crate::paste::paste! {
+        paste::paste! {
             pub struct [<$fn_name:camel ErrorHandler>];
 
-            #[ $crate::async_trait::async_trait ]
+            #[async_trait::async_trait]
             impl $crate::types::ErrorHandler for [<$fn_name:camel ErrorHandler>] {
                 async fn run(&self, msg: String, res: &mut $crate::response::ResponseWriter) {
-                    $fn_name(msg, res).await;
+                    $fn_name(msg,res).await;
                 }
             }
 
             #[allow(non_upper_case_globals, dead_code)]
-            pub const [<$fn_name:upper _ERROR_HANDLER>]: [<$fn_name:camel ErrorHandler>] = [<$fn_name:camel ErrorHandler>];
+            pub const [<$fn_name:camel>]: [<$fn_name:camel ErrorHandler>] = [<$fn_name:camel ErrorHandler>];
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Get {
+    ($app:ident, $path:expr, $fn_name:ident) => {
+        paste::paste! {
+            $crate::handler!($fn_name);
+        $app.get($path, [<$fn_name:camel>]);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Post {
+    ($app:ident, $path:expr, $fn_name:ident) => {
+        paste::paste! {
+            $crate::handler!($fn_name);
+        $app.post($path, [<$fn_name:camel>]);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Patch {
+    ($app:ident, $path:expr, $fn_name:ident) => {
+        paste::paste! {
+            $crate::handler!($fn_name);
+        $app.patch($path, [<$fn_name:camel>]);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Put {
+    ($app:ident, $path:expr, $fn_name:ident) => {
+        paste::paste! {
+            $crate::handler!($fn_name);
+        $app.put($path, [<$fn_name:camel>]);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Delete {
+    ($app:ident, $path:expr, $fn_name:ident) => {
+        paste::paste! {
+            $crate::handler!($fn_name);
+        $app.delete($path, [<$fn_name:camel>]);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Middleware {
+    ($app:ident, $path:expr, $method:ident ,$fn_name:ident) => {
+        paste::paste! {
+            $crate::middleware!($fn_name);
+
+            $app.middleware($path, Some($crate::types::Method::$method) , [<$fn_name:camel>]);
+        }
+    };
+
+    ($app:ident, $path:expr ,$fn_name:ident) => {
+        paste::paste! {
+            $crate::middleware!($fn_name);
+            $app.middleware($path, None , [<$fn_name:camel>]);
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Error {
+    ($app:ident,$fn_name:ident) => {
+        paste::paste! {
+            $crate::error!($fn_name);
+
+            $app.set_error_handler([<$fn_name:camel>]);
         }
     };
 }

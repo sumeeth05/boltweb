@@ -58,19 +58,28 @@ impl Router {
     }
 
     pub fn collect_middleware(&self, path: &str, method: Method) -> Vec<Arc<dyn Middleware>> {
-        let mut result = Vec::new();
+        let mut entries = vec![];
 
         for (key_bytes, node) in self.router.iter() {
             let route = std::str::from_utf8(key_bytes).unwrap();
 
             if path.starts_with(route) {
                 if let Some(mws) = node.middleware.get(&method) {
-                    result.extend(mws.iter());
+                    entries.push((route.to_string(), mws.clone()));
                 }
             }
         }
 
-        result.into_iter().cloned().collect()
+        entries.sort_by_key(|(route, _)| route.len());
+
+        let mut final_list = vec![];
+        for (_, mws) in entries {
+            for mw in mws {
+                final_list.push(mw);
+            }
+        }
+
+        final_list
     }
 
     pub fn match_path(&self, route: &str, uri: &str) -> Option<HashMap<String, String>> {

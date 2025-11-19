@@ -7,34 +7,44 @@ use mime::Mime;
 use multer::Multipart;
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;
+use std::net::SocketAddr;
 use tokio::io::AsyncWriteExt;
 use url::form_urlencoded;
 use uuid::Uuid;
 
 use crate::types::{BoltError, FormData, FormFile};
 
+#[allow(dead_code)]
 pub struct RequestBody {
-    inner: Option<Request<Incoming>>,
+    pub inner: Option<Request<Incoming>>,
+    pub raw_body: Option<Bytes>,
     params: HashMap<String, String>,
     form_data_result: Option<Result<FormData, Box<dyn std::error::Error + Send + Sync>>>,
     temp_paths: Vec<String>,
-    pub log: bool,
+    socket: SocketAddr,
+    pub extended: bool,
 }
 
 #[allow(dead_code)]
 impl RequestBody {
-    pub fn new(req: Request<Incoming>) -> Self {
+    pub fn new(req: Request<Incoming>, socket: SocketAddr) -> Self {
         Self {
             inner: Some(req),
             params: HashMap::new(),
             form_data_result: None,
             temp_paths: Vec::new(),
-            log: false,
+            socket,
+            extended: false,
+            raw_body: None,
         }
     }
 
     pub fn params(&self) -> &HashMap<String, String> {
         &self.params
+    }
+
+    pub fn remote_addr(&self) -> &SocketAddr {
+        &self.socket
     }
 
     pub fn param(&self, key: &str) -> String {
@@ -120,26 +130,46 @@ impl RequestBody {
     }
 
     pub async fn bytes(&mut self) -> Result<Bytes, hyper::Error> {
-        let req = self
+        if let Some(raw) = &self.raw_body {
+            return Ok(raw.clone());
+        }
+
+        let req: Request<Incoming> = self
             .inner
             .take()
             .expect("Request body has already been consumed.");
 
         let (_, body) = req.into_parts();
+
         let collected = body.collect().await?;
         Ok(collected.to_bytes())
     }
 
-    pub async fn text(&mut self) -> Result<String, Box<dyn std::error::Error>> {
+    pub async fn text(&mut self) -> Result<String, BoltError> {
         let bytes = self.bytes().await?;
         let text = String::from_utf8(bytes.to_vec())?;
         Ok(text)
     }
 
-    pub async fn json<T: DeserializeOwned>(&mut self) -> Result<T, Box<dyn std::error::Error>> {
+    pub async fn json<T: DeserializeOwned>(&mut self) -> Result<T, BoltError> {
         let bytes = self.bytes().await?;
-        let value = serde_json::from_slice(&bytes)?;
-        Ok(value)
+        Ok(serde_json::from_slice(&bytes)?)
+    }
+
+    pub async fn urlencoded(&mut self) -> Result<serde_json::Value, BoltError> {
+        let bytes = self.bytes().await?;
+
+        if self.extended {
+            let structured: serde_json::Value = serde_urlencoded::from_bytes(&bytes)?;
+            Ok(structured)
+        } else {
+            let s = String::from_utf8(bytes.to_vec())?;
+            let mut map = HashMap::new();
+            for (k, v) in form_urlencoded::parse(s.as_bytes()) {
+                map.insert(k.into_owned(), v.into_owned());
+            }
+            Ok(serde_json::json!(map))
+        }
     }
 
     pub fn get_cookie(&self, name: &str) -> Option<String> {

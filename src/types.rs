@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-
 use crate::{request::RequestBody, response::ResponseWriter};
 use async_trait::async_trait;
+use std::collections::HashMap;
+use std::error::Error as StdError;
 
 #[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]
 pub enum Method {
@@ -22,21 +22,6 @@ pub enum Mode {
     Http2,
 }
 
-#[async_trait]
-pub trait Middleware: Send + Sync {
-    async fn run(&self, req: &mut RequestBody, res: &mut ResponseWriter);
-}
-
-#[async_trait]
-pub trait ErrorHandler: Send + Sync {
-    async fn run(&self, msg: String, res: &mut ResponseWriter);
-}
-
-#[async_trait]
-pub trait Handler: Send + Sync {
-    async fn handle(&self, req: &mut RequestBody, res: &mut ResponseWriter);
-}
-
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct FormFile {
@@ -52,8 +37,22 @@ pub struct FormData {
     pub fields: HashMap<String, String>,
 }
 
-#[allow(dead_code)]
-pub type BoltError = Box<dyn std::error::Error + Send + Sync>;
+#[async_trait]
+pub trait Middleware: Send + Sync {
+    async fn run(&self, req: &mut RequestBody, res: &mut ResponseWriter);
+}
+
+#[async_trait]
+pub trait ErrorHandler: Send + Sync {
+    async fn run(&self, msg: String, res: &mut ResponseWriter);
+}
+
+#[async_trait]
+pub trait Handler: Send + Sync {
+    async fn run(&self, req: &mut RequestBody, res: &mut ResponseWriter);
+}
+
+pub type BoltError = Box<dyn StdError + Send + Sync>;
 
 #[allow(dead_code)]
 pub type BoltResult<T> = Result<T, BoltError>;
